@@ -24,20 +24,33 @@ import (
 	"errors"
 	"fmt"
 	"math/big"
+	"unsafe"
 
 	"github.com/decred/dcrd/dcrec/secp256k1/v4"
 	decred_ecdsa "github.com/decred/dcrd/dcrec/secp256k1/v4/ecdsa"
 )
 
-// Ecrecover returns the uncompressed public key that created the given signature.
+//go:wasmimport sp1 secp256k1_ecrecover
+func sp1Ecrecover(hash, sig, output unsafe.Pointer) uint32
+
 func Ecrecover(hash, sig []byte) ([]byte, error) {
-	pub, err := sigToPub(hash, sig)
-	if err != nil {
-		return nil, err
+	pub := make([]byte, 65)
+	ret := sp1Ecrecover(unsafe.Pointer(&hash[0]), unsafe.Pointer(&sig[0]), unsafe.Pointer(&pub[0]))
+	if ret != 0 {
+		return nil, fmt.Errorf("recovery failed with code: %d", ret)
 	}
-	bytes := pub.SerializeUncompressed()
-	return bytes, err
+	return pub, nil
 }
+
+// Ecrecover returns the uncompressed public key that created the given signature.
+// func Ecrecover(hash, sig []byte) ([]byte, error) {
+// 	pub, err := sigToPub(hash, sig)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	bytes := pub.SerializeUncompressed()
+// 	return bytes, err
+// }
 
 func sigToPub(hash, sig []byte) (*secp256k1.PublicKey, error) {
 	if len(sig) != SignatureLength {
