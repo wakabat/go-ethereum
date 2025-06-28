@@ -37,6 +37,7 @@ var (
 
 	// 0x00 prefix to avoid conflicts when wasmdb is not separate database
 	activatedAsmWavmPrefix = WasmPrefix{0x00, 'w', 'w'} // (prefix, moduleHash) -> stylus module (wavm)
+	activatedAsmWasmPrefix = WasmPrefix{0x00, 'w', 's'} // (prefix, moduleHash) -> wasm module
 	activatedAsmArmPrefix  = WasmPrefix{0x00, 'w', 'r'} // (prefix, moduleHash) -> stylus asm for ARM system
 	activatedAsmX86Prefix  = WasmPrefix{0x00, 'w', 'x'} // (prefix, moduleHash) -> stylus asm for x86 system
 	activatedAsmHostPrefix = WasmPrefix{0x00, 'w', 'h'} // (prefix, moduleHash) -> stylus asm for system other then ARM and x86

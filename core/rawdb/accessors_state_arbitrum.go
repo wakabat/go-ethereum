@@ -27,6 +27,7 @@ import (
 
 const (
 	TargetWavm  ethdb.WasmTarget = "wavm"
+	TargetWasm  ethdb.WasmTarget = "wasm"
 	TargetArm64 ethdb.WasmTarget = "arm64"
 	TargetAmd64 ethdb.WasmTarget = "amd64"
 	TargetHost  ethdb.WasmTarget = "host"
@@ -49,6 +50,8 @@ func activatedAsmKeyPrefix(target ethdb.WasmTarget) (WasmPrefix, error) {
 	switch target {
 	case TargetWavm:
 		prefix = activatedAsmWavmPrefix
+	case TargetWasm:
+		prefix = activatedAsmWasmPrefix
 	case TargetArm64:
 		prefix = activatedAsmArmPrefix
 	case TargetAmd64:
