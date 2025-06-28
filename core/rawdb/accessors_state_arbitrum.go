@@ -30,6 +30,7 @@ type WasmTarget string
 
 const (
 	TargetWavm  WasmTarget = "wavm"
+	TargetWasm  WasmTarget = "wasm"
 	TargetArm64 WasmTarget = "arm64"
 	TargetAmd64 WasmTarget = "amd64"
 	TargetHost  WasmTarget = "host"
@@ -52,6 +53,8 @@ func activatedAsmKeyPrefix(target WasmTarget) (WasmPrefix, error) {
 	switch target {
 	case TargetWavm:
 		prefix = activatedAsmWavmPrefix
+	case TargetWasm:
+		prefix = activatedAsmWasmPrefix
 	case TargetArm64:
 		prefix = activatedAsmArmPrefix
 	case TargetAmd64:
