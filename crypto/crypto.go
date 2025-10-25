@@ -28,7 +28,6 @@ import (
 	"io"
 	"math/big"
 	"os"
-	"sync"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/math"
@@ -69,48 +68,11 @@ type KeccakState interface {
 	Read([]byte) (int, error)
 }
 
-// NewKeccakState creates a new KeccakState
-func NewKeccakState() KeccakState {
-	return sha3.NewLegacyKeccak256().(KeccakState)
-}
-
-var hasherPool = sync.Pool{
-	New: func() any {
-		return sha3.NewLegacyKeccak256().(KeccakState)
-	},
-}
-
 // HashData hashes the provided data using the KeccakState and returns a 32 byte hash
 func HashData(kh KeccakState, data []byte) (h common.Hash) {
 	kh.Reset()
 	kh.Write(data)
 	kh.Read(h[:])
-	return h
-}
-
-// Keccak256 calculates and returns the Keccak256 hash of the input data.
-func Keccak256(data ...[]byte) []byte {
-	b := make([]byte, 32)
-	d := hasherPool.Get().(KeccakState)
-	d.Reset()
-	for _, b := range data {
-		d.Write(b)
-	}
-	d.Read(b)
-	hasherPool.Put(d)
-	return b
-}
-
-// Keccak256Hash calculates and returns the Keccak256 hash of the input data,
-// converting it to an internal Hash data structure.
-func Keccak256Hash(data ...[]byte) (h common.Hash) {
-	d := hasherPool.Get().(KeccakState)
-	d.Reset()
-	for _, b := range data {
-		d.Write(b)
-	}
-	d.Read(h[:])
-	hasherPool.Put(d)
 	return h
 }
 
