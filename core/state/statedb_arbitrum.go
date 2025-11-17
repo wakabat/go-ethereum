@@ -315,7 +315,7 @@ func (s *StateDB) RecordProgram(targets []rawdb.WasmTarget, moduleHash common.Ha
 	if wasm != nil {
 		asmMap[rawdb.TargetWasm] = wasm
 	}
-	log.Info("Recording program module hash:", moduleHash, "keys:", slices.Sorted(maps.Keys(asmMap)))
+	log.Info("Recording program", "module hash", moduleHash, "keys", slices.Sorted(maps.Keys(asmMap)))
 	if s.arbExtraData.userWasms != nil {
 		s.arbExtraData.userWasms[moduleHash] = asmMap
 	}
