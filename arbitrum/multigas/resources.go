@@ -173,20 +173,23 @@ func (z MultiGas) SaturatingAdd(x MultiGas) MultiGas {
 	res := z
 
 	for i := 0; i < int(NumResourceKind); i++ {
-		if v, c := bits.Add64(res.gas[i], x.gas[i], 0); c != 0 {
+		v := res.gas[i] + x.gas[i]
+		if v < x.gas[i] {
 			res.gas[i] = ^uint64(0) // clamp
 		} else {
 			res.gas[i] = v
 		}
 	}
 
-	if t, c := bits.Add64(res.total, x.total, 0); c != 0 {
+	t := res.total + x.total
+	if t < x.total {
 		res.total = ^uint64(0) // clamp
 	} else {
 		res.total = t
 	}
 
-	if r, c := bits.Add64(res.refund, x.refund, 0); c != 0 {
+	r := res.refund + x.refund
+	if r < x.refund {
 		res.refund = ^uint64(0) // clamp
 	} else {
 		res.refund = r
@@ -200,18 +203,21 @@ func (z MultiGas) SaturatingAdd(x MultiGas) MultiGas {
 // This is a hot-path helper; the public immutable API remains preferred elsewhere.
 func (z *MultiGas) SaturatingAddInto(x MultiGas) {
 	for i := 0; i < int(NumResourceKind); i++ {
-		if v, c := bits.Add64(z.gas[i], x.gas[i], 0); c != 0 {
+		v := z.gas[i] + x.gas[i]
+		if v < x.gas[i] {
 			z.gas[i] = ^uint64(0) // clamp
 		} else {
 			z.gas[i] = v
 		}
 	}
-	if t, c := bits.Add64(z.total, x.total, 0); c != 0 {
+	t := z.total + x.total
+	if t < x.total {
 		z.total = ^uint64(0) // clamp
 	} else {
 		z.total = t
 	}
-	if r, c := bits.Add64(z.refund, x.refund, 0); c != 0 {
+	r := z.refund + x.refund
+	if r < x.refund {
 		z.refund = ^uint64(0) // clamp
 	} else {
 		z.refund = r
@@ -302,13 +308,15 @@ func (z MultiGas) SafeIncrement(kind ResourceKind, gas uint64) (MultiGas, bool) 
 func (z MultiGas) SaturatingIncrement(kind ResourceKind, gas uint64) MultiGas {
 	res := z
 
-	if v, c := bits.Add64(res.gas[kind], gas, 0); c != 0 {
+	v := res.gas[kind] + gas
+	if v < gas {
 		res.gas[kind] = ^uint64(0) // clamp
 	} else {
 		res.gas[kind] = v
 	}
 
-	if t, c := bits.Add64(res.total, gas, 0); c != 0 {
+	t := res.total + gas
+	if t < gas {
 		res.total = ^uint64(0) // clamp
 	} else {
 		res.total = t
@@ -322,13 +330,15 @@ func (z MultiGas) SaturatingIncrement(kind ResourceKind, gas uint64) MultiGas {
 // Unlike SaturatingIncrement, this method mutates the receiver directly and
 // is intended for VM hot paths where avoiding value copies is critical.
 func (z *MultiGas) SaturatingIncrementInto(kind ResourceKind, gas uint64) {
-	if v, c := bits.Add64(z.gas[kind], gas, 0); c != 0 {
+	v := z.gas[kind] + gas
+	if v < gas {
 		z.gas[kind] = ^uint64(0)
 	} else {
 		z.gas[kind] = v
 	}
 
-	if t, c := bits.Add64(z.total, gas, 0); c != 0 {
+	t := z.total + gas
+	if t < gas {
 		z.total = ^uint64(0)
 	} else {
 		z.total = t
