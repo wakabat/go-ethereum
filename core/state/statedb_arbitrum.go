@@ -303,14 +303,10 @@ func (s *StateDB) StartRecording() {
 	s.arbExtraData.userWasms = make(UserWasms)
 }
 
-func (s *StateDB) RecordProgram(targets []rawdb.WasmTarget, moduleHash common.Hash) error {
-	if len(targets) == 0 {
+func (s *StateDB) RecordProgram(asmMap map[rawdb.WasmTarget][]byte, moduleHash common.Hash) error {
+	if len(asmMap) == 0 {
 		// nothing to record
 		return nil
-	}
-	asmMap, missingTargets, err := s.ActivatedAsmMap(targets, moduleHash)
-	if err != nil || len(missingTargets) > 0 {
-		return fmt.Errorf("can't find activated wasm, missing targets: %v, err: %w", missingTargets, err)
 	}
 	if s.arbExtraData.userWasms != nil {
 		s.arbExtraData.userWasms[moduleHash] = asmMap
